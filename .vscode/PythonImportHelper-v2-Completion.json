@@ -57,6 +57,14 @@
         "documentation": {}
     },
     {
+        "label": "admin",
+        "importPath": "django.contrib",
+        "description": "django.contrib",
+        "isExtraImport": true,
+        "detail": "django.contrib",
+        "documentation": {}
+    },
+    {
         "label": "path",
         "importPath": "django.urls",
         "description": "django.urls",
@@ -81,11 +89,51 @@
         "documentation": {}
     },
     {
+        "label": "path",
+        "importPath": "django.urls",
+        "description": "django.urls",
+        "isExtraImport": true,
+        "detail": "django.urls",
+        "documentation": {}
+    },
+    {
         "label": "get_wsgi_application",
         "importPath": "django.core.wsgi",
         "description": "django.core.wsgi",
         "isExtraImport": true,
         "detail": "django.core.wsgi",
+        "documentation": {}
+    },
+    {
+        "label": "api_view",
+        "importPath": "rest_framework.decorators",
+        "description": "rest_framework.decorators",
+        "isExtraImport": true,
+        "detail": "rest_framework.decorators",
+        "documentation": {}
+    },
+    {
+        "label": "api_view",
+        "importPath": "rest_framework.decorators",
+        "description": "rest_framework.decorators",
+        "isExtraImport": true,
+        "detail": "rest_framework.decorators",
+        "documentation": {}
+    },
+    {
+        "label": "Response",
+        "importPath": "rest_framework.response",
+        "description": "rest_framework.response",
+        "isExtraImport": true,
+        "detail": "rest_framework.response",
+        "documentation": {}
+    },
+    {
+        "label": "Response",
+        "importPath": "rest_framework.response",
+        "description": "rest_framework.response",
+        "isExtraImport": true,
+        "detail": "rest_framework.response",
         "documentation": {}
     },
     {
@@ -99,6 +147,14 @@
     },
     {
         "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
         "importPath": "django.db",
         "description": "django.db",
         "isExtraImport": true,
@@ -170,19 +226,20 @@
         "documentation": {}
     },
     {
-        "label": "api_view",
-        "importPath": "rest_framework.decorators",
-        "description": "rest_framework.decorators",
+        "label": "random",
+        "kind": 6,
         "isExtraImport": true,
-        "detail": "rest_framework.decorators",
+        "importPath": "random",
+        "description": "random",
+        "detail": "random",
         "documentation": {}
     },
     {
-        "label": "Response",
-        "importPath": "rest_framework.response",
-        "description": "rest_framework.response",
+        "label": "ceil",
+        "importPath": "math",
+        "description": "math",
         "isExtraImport": true,
-        "detail": "rest_framework.response",
+        "detail": "math",
         "documentation": {}
     },
     {
@@ -191,6 +248,15 @@
         "description": "django.shortcuts",
         "isExtraImport": true,
         "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
+        "label": "logging",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "logging",
+        "description": "logging",
+        "detail": "logging",
         "documentation": {}
     },
     {
@@ -225,7 +291,7 @@
         "kind": 5,
         "importPath": "backend.core.settings",
         "description": "backend.core.settings",
-        "peekOfCode": "BASE_DIR = Path(__file__).resolve().parent.parent\nSECRET_KEY = os.getenv(\"DJANGO_SECRET_KEY\", \"dev-secret-do-not-use\")\nDEBUG = os.getenv(\"DEBUG\", \"1\") == \"1\"\nALLOWED_HOSTS = os.getenv(\"ALLOWED_HOSTS\", \"*\").split(\",\")\nINSTALLED_APPS = [\n    \"django.contrib.admin\",\n    \"django.contrib.auth\",\n    \"django.contrib.contenttypes\",\n    \"django.contrib.sessions\",\n    \"django.contrib.messages\",",
+        "peekOfCode": "BASE_DIR = Path(__file__).resolve().parent.parent\nSECRET_KEY = os.getenv(\"DJANGO_SECRET_KEY\", \"dev-secret-do-not-use\")\nDEBUG = os.getenv(\"DEBUG\", \"1\") == \"1\"\nALLOWED_HOSTS = os.getenv(\"ALLOWED_HOSTS\", \"*\").split(\",\")\nADMIN_API_KEY = os.getenv(\"ADMIN_API_KEY\", \"\").strip() # Clave para admin API\nINSTALLED_APPS = [\n    \"django.contrib.admin\",\n    \"django.contrib.auth\",\n    \"django.contrib.contenttypes\",\n    \"django.contrib.sessions\",",
         "detail": "backend.core.settings",
         "documentation": {}
     },
@@ -234,7 +300,7 @@
         "kind": 5,
         "importPath": "backend.core.settings",
         "description": "backend.core.settings",
-        "peekOfCode": "SECRET_KEY = os.getenv(\"DJANGO_SECRET_KEY\", \"dev-secret-do-not-use\")\nDEBUG = os.getenv(\"DEBUG\", \"1\") == \"1\"\nALLOWED_HOSTS = os.getenv(\"ALLOWED_HOSTS\", \"*\").split(\",\")\nINSTALLED_APPS = [\n    \"django.contrib.admin\",\n    \"django.contrib.auth\",\n    \"django.contrib.contenttypes\",\n    \"django.contrib.sessions\",\n    \"django.contrib.messages\",\n    \"django.contrib.staticfiles\",",
+        "peekOfCode": "SECRET_KEY = os.getenv(\"DJANGO_SECRET_KEY\", \"dev-secret-do-not-use\")\nDEBUG = os.getenv(\"DEBUG\", \"1\") == \"1\"\nALLOWED_HOSTS = os.getenv(\"ALLOWED_HOSTS\", \"*\").split(\",\")\nADMIN_API_KEY = os.getenv(\"ADMIN_API_KEY\", \"\").strip() # Clave para admin API\nINSTALLED_APPS = [\n    \"django.contrib.admin\",\n    \"django.contrib.auth\",\n    \"django.contrib.contenttypes\",\n    \"django.contrib.sessions\",\n    \"django.contrib.messages\",",
         "detail": "backend.core.settings",
         "documentation": {}
     },
@@ -243,7 +309,7 @@
         "kind": 5,
         "importPath": "backend.core.settings",
         "description": "backend.core.settings",
-        "peekOfCode": "DEBUG = os.getenv(\"DEBUG\", \"1\") == \"1\"\nALLOWED_HOSTS = os.getenv(\"ALLOWED_HOSTS\", \"*\").split(\",\")\nINSTALLED_APPS = [\n    \"django.contrib.admin\",\n    \"django.contrib.auth\",\n    \"django.contrib.contenttypes\",\n    \"django.contrib.sessions\",\n    \"django.contrib.messages\",\n    \"django.contrib.staticfiles\",\n    \"rest_framework\",",
+        "peekOfCode": "DEBUG = os.getenv(\"DEBUG\", \"1\") == \"1\"\nALLOWED_HOSTS = os.getenv(\"ALLOWED_HOSTS\", \"*\").split(\",\")\nADMIN_API_KEY = os.getenv(\"ADMIN_API_KEY\", \"\").strip() # Clave para admin API\nINSTALLED_APPS = [\n    \"django.contrib.admin\",\n    \"django.contrib.auth\",\n    \"django.contrib.contenttypes\",\n    \"django.contrib.sessions\",\n    \"django.contrib.messages\",\n    \"django.contrib.staticfiles\",",
         "detail": "backend.core.settings",
         "documentation": {}
     },
@@ -252,7 +318,16 @@
         "kind": 5,
         "importPath": "backend.core.settings",
         "description": "backend.core.settings",
-        "peekOfCode": "ALLOWED_HOSTS = os.getenv(\"ALLOWED_HOSTS\", \"*\").split(\",\")\nINSTALLED_APPS = [\n    \"django.contrib.admin\",\n    \"django.contrib.auth\",\n    \"django.contrib.contenttypes\",\n    \"django.contrib.sessions\",\n    \"django.contrib.messages\",\n    \"django.contrib.staticfiles\",\n    \"rest_framework\",\n    \"corsheaders\",",
+        "peekOfCode": "ALLOWED_HOSTS = os.getenv(\"ALLOWED_HOSTS\", \"*\").split(\",\")\nADMIN_API_KEY = os.getenv(\"ADMIN_API_KEY\", \"\").strip() # Clave para admin API\nINSTALLED_APPS = [\n    \"django.contrib.admin\",\n    \"django.contrib.auth\",\n    \"django.contrib.contenttypes\",\n    \"django.contrib.sessions\",\n    \"django.contrib.messages\",\n    \"django.contrib.staticfiles\",\n    \"rest_framework\",",
+        "detail": "backend.core.settings",
+        "documentation": {}
+    },
+    {
+        "label": "ADMIN_API_KEY",
+        "kind": 5,
+        "importPath": "backend.core.settings",
+        "description": "backend.core.settings",
+        "peekOfCode": "ADMIN_API_KEY = os.getenv(\"ADMIN_API_KEY\", \"\").strip() # Clave para admin API\nINSTALLED_APPS = [\n    \"django.contrib.admin\",\n    \"django.contrib.auth\",\n    \"django.contrib.contenttypes\",\n    \"django.contrib.sessions\",\n    \"django.contrib.messages\",\n    \"django.contrib.staticfiles\",\n    \"rest_framework\",\n    \"corsheaders\",",
         "detail": "backend.core.settings",
         "documentation": {}
     },
@@ -450,7 +525,7 @@
         "kind": 5,
         "importPath": "backend.core.urls",
         "description": "backend.core.urls",
-        "peekOfCode": "urlpatterns = [\n    path(\"admin/\", admin.site.urls),\n    path(\"api/\", include(\"participants.urls\")),\n]",
+        "peekOfCode": "urlpatterns = [\n    path(\"admin/\", admin.site.urls),\n    path(\"api/\", include(\"participants.urls\")),\n    path(\"api/\", include(\"coreapi.urls\")),\n]",
         "detail": "backend.core.urls",
         "documentation": {}
     },
@@ -464,12 +539,39 @@
         "documentation": {}
     },
     {
+        "label": "urlpatterns",
+        "kind": 5,
+        "importPath": "backend.coreapi.urls",
+        "description": "backend.coreapi.urls",
+        "peekOfCode": "urlpatterns = [\n    path(\"health\", health),\n]",
+        "detail": "backend.coreapi.urls",
+        "documentation": {}
+    },
+    {
+        "label": "health",
+        "kind": 2,
+        "importPath": "backend.coreapi.views",
+        "description": "backend.coreapi.views",
+        "peekOfCode": "def health(request):\n    return Response({\"status\": \"ok\"})",
+        "detail": "backend.coreapi.views",
+        "documentation": {}
+    },
+    {
         "label": "Migration",
         "kind": 6,
         "importPath": "backend.participants.migrations.0001_initial",
         "description": "backend.participants.migrations.0001_initial",
         "peekOfCode": "class Migration(migrations.Migration):\n    initial = True\n    dependencies = []\n    operations = [\n        migrations.CreateModel(\n            name=\"Participant\",\n            fields=[\n                (\n                    \"id\",\n                    models.BigAutoField(",
         "detail": "backend.participants.migrations.0001_initial",
+        "documentation": {}
+    },
+    {
+        "label": "ParticipantAdmin",
+        "kind": 6,
+        "importPath": "backend.participants.admin",
+        "description": "backend.participants.admin",
+        "peekOfCode": "class ParticipantAdmin(admin.ModelAdmin):\n    list_display = (\"full_name\", \"email\", \"is_verified\", \"created_at\")\n    search_fields = (\"full_name\", \"email\")\n    list_filter = (\"is_verified\", \"created_at\")",
+        "detail": "backend.participants.admin",
         "documentation": {}
     },
     {
@@ -486,7 +588,7 @@
         "kind": 6,
         "importPath": "backend.participants.serializers",
         "description": "backend.participants.serializers",
-        "peekOfCode": "class ParticipantCreateSerializer(serializers.ModelSerializer):\n    class Meta:\n        model = Participant\n        fields = [\"full_name\", \"email\", \"phone\"]\n    def validate_email(self, value):\n        if Participant.objects.filter(email__iexact=value).exists():\n            raise serializers.ValidationError(\"Este correo ya está registrado.\")\n        return value",
+        "peekOfCode": "class ParticipantCreateSerializer(serializers.ModelSerializer):\n    class Meta:\n        model = Participant\n        fields = [\"id\", \"full_name\", \"email\", \"phone\", \"is_verified\", \"created_at\"]\n    def validate_email(self, value):\n        if Participant.objects.filter(email__iexact=value).exists():\n            raise serializers.ValidationError(\"Este correo ya está registrado.\")\n        return value",
         "detail": "backend.participants.serializers",
         "documentation": {}
     },
@@ -500,11 +602,20 @@
         "documentation": {}
     },
     {
+        "label": "send_winner_email_task",
+        "kind": 2,
+        "importPath": "backend.participants.tasks",
+        "description": "backend.participants.tasks",
+        "peekOfCode": "def send_winner_email_task(participant_id: int):\n    p = Participant.objects.get(id=participant_id)\n    subject = \"¡Felicidades! Eres el ganador – Sorteo San Valentín\"\n    message = (\n        f\"Hola {p.full_name},\\n\\n\"\n        \"¡Felicidades! Has sido seleccionado como ganador del Sorteo San Valentín.\\n\"\n        \"Nos pondremos en contacto contigo para coordinar la entrega del premio.\\n\\n\"\n        \"Saludos,\\nCTS Turismo\"\n    )\n    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [p.email])",
+        "detail": "backend.participants.tasks",
+        "documentation": {}
+    },
+    {
         "label": "urlpatterns",
         "kind": 5,
         "importPath": "backend.participants.urls",
         "description": "backend.participants.urls",
-        "peekOfCode": "urlpatterns = [\n    path(\"participants/register/\", register),\n    path(\"participants/verify/<uuid:token>/\", verify_token),\n    path(\"participants/set-password/<int:participant_id>/\", set_password),\n]",
+        "peekOfCode": "urlpatterns = [\n    path(\"participants/register/\", register),\n    path(\"participants/verify/<uuid:token>/\", verify_token),\n    path(\"participants/set-password/<int:participant_id>/\", set_password),\n    path(\"debug/celery/\", debug_celery),  # Ruta para verificar si se usa Celery\n      # Admin API\n    path(\"admin/participants/\", admin_participants),  # GET con X-API-Key\n    path(\"admin/draw/\", admin_draw),                  # POST con X-API-Key\n]",
         "detail": "backend.participants.urls",
         "documentation": {}
     },
@@ -522,7 +633,7 @@
         "kind": 2,
         "importPath": "backend.participants.views",
         "description": "backend.participants.views",
-        "peekOfCode": "def verify_token(request, token):\n    \"\"\"\n    Verifica el correo a partir del token enviado.\n    \"\"\"\n    participant = get_object_or_404(Participant, verification_token=token)\n    if participant.is_verified:\n        return Response({\"detail\": \"Ya verificado\", \"participant_id\": participant.id}, status=200)\n    participant.is_verified = True\n    participant.save(update_fields=[\"is_verified\"])\n    return Response(",
+        "peekOfCode": "def verify_token(request, token):\n    \"\"\"\n    Verifica el correo a partir del token enviado.\n    \"\"\"\n    participant = get_object_or_404(Participant, verification_token=token)\n    if participant.is_verified:\n        return Response(\n            {\"detail\": \"Ya verificado\", \"participant_id\": participant.id}, status=200\n        )\n    participant.is_verified = True",
         "detail": "backend.participants.views",
         "documentation": {}
     },
@@ -532,6 +643,42 @@
         "importPath": "backend.participants.views",
         "description": "backend.participants.views",
         "peekOfCode": "def set_password(request, participant_id):\n    \"\"\"\n    Crea la contraseña del participante ya verificado.\n    \"\"\"\n    participant = get_object_or_404(Participant, id=participant_id)\n    if not participant.is_verified:\n        return Response({\"detail\": \"Cuenta no verificada\"}, status=403)\n    password = request.data.get(\"password\")\n    if not password or len(password) < 8:\n        return Response({\"password\": \"Debe tener al menos 8 caracteres\"}, status=400)",
+        "detail": "backend.participants.views",
+        "documentation": {}
+    },
+    {
+        "label": "debug_celery",
+        "kind": 2,
+        "importPath": "backend.participants.views",
+        "description": "backend.participants.views",
+        "peekOfCode": "def debug_celery(request):\n    return Response({\"USE_CELERY\": settings.USE_CELERY})\n# Helper para autenticación simple con API Key en header, su función es devolver None si OK, o Response(...) si falla.\ndef _require_api_key(request):\n    \"\"\"\n    Valida el header X-API-Key contra settings.ADMIN_API_KEY.\n    Devuelve None si OK; Response(...) si falla.\n    \"\"\"\n    configured = getattr(settings, \"ADMIN_API_KEY\", \"\") or \"\"\n    sent = request.headers.get(\"X-API-Key\") or request.META.get(\"HTTP_X_API_KEY\")",
+        "detail": "backend.participants.views",
+        "documentation": {}
+    },
+    {
+        "label": "admin_participants",
+        "kind": 2,
+        "importPath": "backend.participants.views",
+        "description": "backend.participants.views",
+        "peekOfCode": "def admin_participants(request):\n    \"\"\"\n    Lista participantes para el panel admin.\n    Query params:\n      - verified: 1|0\n      - search: texto (en full_name o email)\n      - page: número (default 1)\n      - page_size: número (default 20, max 100)\n    \"\"\"\n    auth = _require_api_key(request)",
+        "detail": "backend.participants.views",
+        "documentation": {}
+    },
+    {
+        "label": "admin_draw",
+        "kind": 2,
+        "importPath": "backend.participants.views",
+        "description": "backend.participants.views",
+        "peekOfCode": "def admin_draw(request):\n    \"\"\"\n    Sortea un ganador entre participantes verificados y envía correo (Celery).\n    \"\"\"\n    auth = _require_api_key(request)\n    if auth:\n        return auth\n    qs = Participant.objects.filter(is_verified=True)\n    count = qs.count()\n    if count == 0:",
+        "detail": "backend.participants.views",
+        "documentation": {}
+    },
+    {
+        "label": "logger",
+        "kind": 5,
+        "importPath": "backend.participants.views",
+        "description": "backend.participants.views",
+        "peekOfCode": "logger = logging.getLogger(__name__)\n@api_view([\"POST\"])\ndef register(request):\n    \"\"\"\n    Crea un participante si el email no existe y envía email de verificación.\n    Respuestas:\n    - 201: {\"message\": \"¡Gracias por registrarte! Revisa tu correo para verificar tu cuenta.\"}\n    - 400: errores de validación\n    \"\"\"\n    s = ParticipantCreateSerializer(data=request.data)",
         "detail": "backend.participants.views",
         "documentation": {}
     },

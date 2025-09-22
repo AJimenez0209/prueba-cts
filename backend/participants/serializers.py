@@ -4,7 +4,7 @@ from .models import Participant
 class ParticipantCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participant
-        fields = ["full_name", "email", "phone"]
+        fields = ["id", "full_name", "email", "phone", "is_verified", "created_at"]
 
     def validate_email(self, value):
         if Participant.objects.filter(email__iexact=value).exists():

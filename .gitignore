@@ -1,0 +1,46 @@
+# Raíz
+.env
+*.env
+*.env.*
+.DS_Store
+Thumbs.db
+
+# Python / Django
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.sqlite3
+*.log
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+.eggs/
+*.egg-info/
+staticfiles/
+media/
+celerybeat-schedule
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# IDEs/editores
+.vscode/
+.idea/
+
+# Frontend (Nuxt/Next/Vite)
+frontend/node_modules/
+frontend/.nuxt/
+frontend/.next/
+frontend/.output/
+frontend/dist/
+frontend/build/
+npm-debug.log*
+pnpm-debug.log*
+yarn-error.log*
+
+# Docker / misc
+*.pid
