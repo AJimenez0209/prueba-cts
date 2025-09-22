@@ -8,6 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-do-not-use")
 DEBUG = os.getenv("DEBUG", "1") == "1"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "").strip() # Clave para admin API
 
 INSTALLED_APPS = [
     "django.contrib.admin",
