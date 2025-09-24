@@ -1,32 +1,25 @@
 # Prueba Técnica – CTS Turismo · Sorteo San Valentín
 
-Aplicación **Full Stack** para gestionar un sorteo de San Valentín.  
-Incluye **backend en Django/DRF + Celery/Redis** y **frontend en Nuxt 3 (Vue 3 + Pinia)**.
+Aplicación Full Stack para gestionar un sorteo de San Valentín.
 
 - **Backend:** Django + Django REST Framework (DRF)  
+- **Frontend:** Nuxt 3 + Tailwind v4 + Pinia  
 - **Tareas asíncronas:** Celery + Redis  
-- **Frontend:** Nuxt 3 (Vue 3 Composition API, Pinia, Tailwind minimal)  
-- **Estado actual:** Flujo completo funcionando:
-  - Registro
-  - Verificación por correo
-  - Set de contraseña
-  - Envío de emails asíncrono
-  - Panel admin: login, lista de participantes, sorteo con notificación
+- **Infraestructura:** Dockerfiles individuales (backend/frontend) + Docker Compose  
+- **Estado actual:** Flujo completo de registro, verificación, set de contraseña, envío de emails asíncronos, panel admin con lista de participantes (todos) y sorteo con notificación.
 
 ---
 
 ## Índice
 - [Requisitos](#requisitos)
 - [Instalación y ejecución](#instalación-y-ejecución)
-  - [Backend](#backend)
-  - [Frontend](#frontend)
-  - [Celery + Redis](#celery--redis)
 - [Variables de entorno](#variables-de-entorno)
 - [Estructura del proyecto](#estructura-del-proyecto)
+- [Flujo funcional](#flujo-funcional)
 - [Endpoints (API) + cURL](#endpoints-api--curl)
-- [Flujo completo](#flujo-completo)
-- [Decisiones técnicas](#decisiones-técnicas)
-- [Manejo de errores](#manejo-de-errores)
+- [Frontend (Nuxt 3)](#frontend-nuxt-3)
+- [Docker](#docker)
+- [Tests](#tests)
 - [Checklist de calidad](#checklist-de-calidad)
 - [Próximos pasos](#próximos-pasos)
 - [Licencia](#licencia)
@@ -34,10 +27,10 @@ Incluye **backend en Django/DRF + Celery/Redis** y **frontend en Nuxt 3 (Vue 3 +
 ---
 
 ## Requisitos
-- **Python 3.11+**  
-- **pip / venv**  
-- **Redis** (Docker recomendado)  
-- **Node.js 18+** para frontend  
+- **Python** 3.11+ (probado en 3.12)  
+- **Node.js** 18+  
+- **Redis** (dev: Docker recomendado)  
+- **Docker / Docker Compose** (para levantar el stack completo)
 
 ---
 
@@ -45,172 +38,168 @@ Incluye **backend en Django/DRF + Celery/Redis** y **frontend en Nuxt 3 (Vue 3 +
 
 ### Backend
 ```bash
-cd prueba-cts/backend
+cd backend
 python -m venv .venv
-source .venv/bin/activate   # Linux/Mac
-.\.venv\Scripts\Activate.ps1  # Windows
+source .venv/bin/activate   # Linux / macOS
+.venv\Scripts\activate      # Windows PowerShell
 
 pip install -r requirements.txt
-cp .env.example .env
-# edita .env con tu SECRET_KEY y ADMIN_API_KEY
-python manage.py migrate
-python manage.py runserver 8000
 ```
-Dev server: http://127.0.0.1:8000/
 
 ### Frontend
 ```bash
-cd prueba-cts/frontend
+cd frontend
 npm install
-cp .env.example .env
-# edita .env con la URL del backend (ej. http://127.0.0.1:8000/api)
 npm run dev
-```
-Frontend: http://localhost:3000/
-
-### Celery + Redis
-Levanta Redis (Docker recomendado):
-```bash
-docker run -d --name redis -p 6379:6379 redis:7
-```
-
-Worker Celery:
-```bash
-cd backend
-celery -A core worker -l info -P solo
 ```
 
 ---
 
 ## Variables de entorno
 
-### Backend (`backend/.env`)
+### Backend `.env`
 ```env
-DJANGO_SECRET_KEY=your-secret
+DJANGO_SECRET_KEY=your-secret-key-here
 DEBUG=1
 ALLOWED_HOSTS=*
 FRONTEND_URL=http://localhost:3000
+
 EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
 DEFAULT_FROM_EMAIL=no-reply@ctsturismo.local
+
 USE_CELERY=1
-CELERY_BROKER_URL=redis://localhost:6379/0
-CELERY_RESULT_BACKEND=redis://localhost:6379/0
+CELERY_BROKER_URL=redis://redis:6379/0
+CELERY_RESULT_BACKEND=redis://redis:6379/0
+
 ADMIN_API_KEY=your-admin-api-key-here
 ```
 
-### Frontend (`frontend/.env`)
+### Frontend `.env`
 ```env
-NUXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api
-NUXT_PUBLIC_ADMIN_API_KEY=
+NUXT_PUBLIC_API_BASE_URL=http://backend:8000/api
+NUXT_PUBLIC_ADMIN_API_KEY=your-admin-api-key-here
 ```
 
 ---
 
 ## Estructura del proyecto
-
 ```
 prueba-cts/
 ├─ backend/
-│  ├─ core/ (settings, celery, urls)
-│  ├─ participants/ (models, serializers, views, tasks)
+│  ├─ core/           # settings, celery, urls
+│  ├─ participants/   # modelos, serializers, views, urls
+│  ├─ tests/          # unit tests (serializers, views)
+│  ├─ Dockerfile
 │  └─ manage.py
 ├─ frontend/
-│  ├─ app.vue
-│  ├─ pages/
-│  │   ├─ index.vue           # Inscripción
-│  │   ├─ verify.vue          # Verificación + set de contraseña
-│  │   └─ admin/
-│  │        ├─ login.vue      # Login admin
-│  │        ├─ participants.vue  # Lista admin
-│  │        └─ draw.vue       # Sorteo admin
-│  ├─ stores/admin.ts
-│  ├─ composables/useApi.ts
-│  └─ middleware/require-admin.ts
-└─ README.md
+│  ├─ pages/          # Nuxt pages: index, verify, admin/*
+│  ├─ components/     # UI: AppCard, AppInput, AppButton, NavBar
+│  ├─ composables/    # useApi
+│  ├─ Dockerfile
+│  └─ nuxt.config.ts
+└─ docker-compose.yml
 ```
+
+---
+
+## Flujo funcional
+1. **Registro (Home)**  
+   - Usuario ingresa datos (nombre, email, teléfono).  
+   - Backend responde con mensaje:  
+     `¡Gracias por registrarte! Revisa tu correo para verificar tu cuenta.`  
+
+2. **Verificación de correo**  
+   - Usuario recibe email con enlace `/verify?token=...`.  
+   - Backend valida token y responde con `participant_id`.  
+
+3. **Set de contraseña**  
+   - Usuario define contraseña en la vista `/verify`.  
+   - Mensaje final:  
+     `Tu cuenta ha sido activada. Ya estás participando en el sorteo.`  
+
+4. **Panel Admin**  
+   - Login con API Key.  
+   - Lista de participantes (verificados y no verificados).  
+   - Sorteo con notificación asíncrona vía Celery.  
 
 ---
 
 ## Endpoints (API) + cURL
-
 ### Público
-**1) Registro**  
-POST `/api/participants/register/`
+- **POST** `/api/participants/register/`
+- **GET** `/api/participants/verify/<token>/`
+- **POST** `/api/participants/set-password/<participant_id>/`
+
+### Admin (requiere header `X-API-Key`)
+- **GET** `/api/admin/participants/`
+- **POST** `/api/admin/draw/`
+
+---
+
+## Frontend (Nuxt 3)
+- `/` → Home con inscripción y verificación por token  
+- `/verify` → Verificación de correo y set de contraseña  
+- `/admin/login` → Ingreso de API Key  
+- `/admin/participants` → Lista de todos los participantes  
+- `/admin/draw` → Sorteo  
+
+---
+
+## Docker
+### Archivos incluidos
+- `backend/Dockerfile` → Backend (Django + DRF + Celery worker).  
+- `frontend/Dockerfile` → Frontend (Nuxt 3 + Tailwind).  
+- `docker-compose.yml` → Orquesta los servicios:
+  - **redis** (cola de Celery)  
+  - **backend** (Django + API REST)  
+  - **worker** (Celery)  
+  - **frontend** (Nuxt 3, puerto 3000)  
+
+### Levantar el stack
 ```bash
-curl -X POST http://127.0.0.1:8000/api/participants/register/   -H "Content-Type: application/json"   -d '{"full_name":"Ana Pérez","email":"ana@example.com","phone":"+56 9 1234 5678"}'
-```
-Respuesta (201):
-```json
-{"message":"¡Gracias por registrarte! Revisa tu correo para verificar tu cuenta.","async":true,"task_id":"<id>"}
+docker compose up --build
 ```
 
-**2) Verificación**  
-GET `/api/participants/verify/<token>/`
-
-**3) Set de contraseña**  
-POST `/api/participants/set-password/<participant_id>/`
+- Frontend: http://localhost:3000  
+- Backend API: http://localhost:8000/api  
+- Redis: localhost:6379  
 
 ---
 
-### Admin (requiere `X-API-Key`)
-**Listar participantes**  
-GET `/api/admin/participants/?verified=1&page=1&page_size=20&search=ana`
-
-**Sorteo**  
-POST `/api/admin/draw/`
-```json
-{
-  "winner": {"id":5,"full_name":"Ana Pérez","email":"ana@example.com", ...},
-  "detail":"Ganador seleccionado y notificado por correo (tarea Celery encolada).",
-  "task_id":"<id>"
-}
+## Tests
+### Backend
+- Serializers y views cubiertos en `backend/tests/`  
+- Ejecutar:
+```bash
+pytest
 ```
 
----
-
-## Flujo completo
-
-1. **Inscripción (/):** formulario → banner “¡Gracias por registrarte!...”
-2. **Verificación (/verify):** token → “Correo verificado correctamente” → set password.
-3. **Set password:** mensaje final → “Tu cuenta ha sido activada. Ya estás participando en el sorteo.”
-4. **Admin login (/admin/login):** ingresar API Key.
-5. **Lista (/admin/participants):** tabla con búsqueda/paginación.
-6. **Sorteo (/admin/draw):** botón → muestra ganador + confirma notificación.
-
----
-
-## Decisiones técnicas
-- **Nuxt 3** con `pages/` para simplicidad y rutas automáticas.
-- **Pinia** para persistir `ADMIN_API_KEY` en localStorage.
-- **useApi.ts** centraliza llamadas con `X-API-Key`.
-- **Celery + Redis** garantizan envío de emails asíncrono.
-- **Mensajes al usuario** replican literal el enunciado del PDF.
-
----
-
-## Manejo de errores
-- Registro duplicado → banner rojo “Este email ya está registrado”.
-- Token inválido → mensaje de error en `/verify`.
-- Password < 8 chars → validación visual + error backend.
-- Admin API sin clave → redirección a login.
+### Frontend
+- Vitest + Vue Test Utils en `frontend/tests/`  
+- Ejecutar:
+```bash
+npm run test
+```
 
 ---
 
 ## Checklist de calidad
-- [x] 5 vistas frontend (Inscripción, Verify+Password, Login, Lista, Sorteo)
-- [x] Mensajes literales del PDF
-- [x] Backend con DRF + Celery + Redis
-- [x] API Key para admin
-- [x] Manejo de estados: loading / error / success
-- [ ] Tests básicos (opcional, plus)
-- [ ] Docker Compose (opcional, plus)
+- [x] Registro con validación de duplicado  
+- [x] Verificación de correo por token  
+- [x] Set de contraseña  
+- [x] Emails asíncronos (Celery + Redis)  
+- [x] Admin API: lista + sorteo  
+- [x] Frontend con 5 vistas  
+- [x] Tailwind v4 integrado  
+- [x] Admin protegido (UI + middleware)  
+- [x] Tests de backend y frontend  
+- [x] Dockerfiles y docker-compose  
+- [ ] Deploy en producción  
 
 ---
 
 ## Próximos pasos
-- Añadir **tests** de serializers y componentes Vue.
-- Crear `docker-compose.yml` para levantar stack completo.
-- Mejorar UI admin (navbar con logout, máscara de email).
+
 
 ---
 

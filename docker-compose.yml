@@ -1,0 +1,52 @@
+
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7
+    container_name: cts_redis
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cts_backend
+    env_file:
+      - ./backend/.env
+    command: sh -c "python manage.py migrate && gunicorn core.wsgi:application --bind 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    volumes:
+      - ./backend:/app
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cts_worker
+    env_file:
+      - ./backend/.env
+    command: sh -c "celery -A core worker -l info"
+    depends_on:
+      - redis
+      - backend
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cts_frontend
+    environment:
+      - NUXT_PUBLIC_API_BASE_URL=http://backend:8000/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app

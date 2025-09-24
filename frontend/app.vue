@@ -1,4 +1,4 @@
-<!-- app.vue -->
 <template>
+  <NavBar />
   <NuxtPage />
 </template>
