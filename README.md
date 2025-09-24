@@ -1,20 +1,30 @@
 # Prueba Técnica – CTS Turismo · Sorteo San Valentín
 
-Aplicación Full Stack para gestionar un sorteo de San Valentín.
-- **Backend:** Django + Django REST Framework (DRF)
-- **Tareas asíncronas:** Celery + Redis
-- **Estado actual:** Registro, verificación por correo, set de contraseña, envío de emails asíncrono, Admin API (listado y sorteo con notificación).
+Aplicación **Full Stack** para gestionar un sorteo de San Valentín.  
+Incluye **backend en Django/DRF + Celery/Redis** y **frontend en Nuxt 3 (Vue 3 + Pinia)**.
+
+- **Backend:** Django + Django REST Framework (DRF)  
+- **Tareas asíncronas:** Celery + Redis  
+- **Frontend:** Nuxt 3 (Vue 3 Composition API, Pinia, Tailwind minimal)  
+- **Estado actual:** Flujo completo funcionando:
+  - Registro
+  - Verificación por correo
+  - Set de contraseña
+  - Envío de emails asíncrono
+  - Panel admin: login, lista de participantes, sorteo con notificación
+
+---
 
 ## Índice
 - [Requisitos](#requisitos)
 - [Instalación y ejecución](#instalación-y-ejecución)
+  - [Backend](#backend)
+  - [Frontend](#frontend)
+  - [Celery + Redis](#celery--redis)
 - [Variables de entorno](#variables-de-entorno)
 - [Estructura del proyecto](#estructura-del-proyecto)
 - [Endpoints (API) + cURL](#endpoints-api--curl)
-  - [Flujo público](#flujo-público)
-  - [Admin API](#admin-api)
-  - [Debug opcional](#debug-opcional)
-- [Celery + Redis (emails asíncronos)](#celery--redis-emails-asíncronos)
+- [Flujo completo](#flujo-completo)
 - [Decisiones técnicas](#decisiones-técnicas)
 - [Manejo de errores](#manejo-de-errores)
 - [Checklist de calidad](#checklist-de-calidad)
@@ -24,79 +34,75 @@ Aplicación Full Stack para gestionar un sorteo de San Valentín.
 ---
 
 ## Requisitos
-- **Python** 3.11+ (probado en 3.12)
-- **Pip** / **venv**
-- **Redis** (dev: Docker recomendado)
-- (Próximamente) **Node 18+** para frontend
+- **Python 3.11+**  
+- **pip / venv**  
+- **Redis** (Docker recomendado)  
+- **Node.js 18+** para frontend  
 
 ---
 
 ## Instalación y ejecución
 
-> Comandos para **Windows (PowerShell)**; en macOS/Linux cambia rutas y activación de venv.
-
-```powershell
-cd path\to\your\workspace
-git clone https://github.com/<tu-usuario>/prueba-cts.git
-cd prueba-cts\backend
-
+### Backend
+```bash
+cd prueba-cts/backend
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1   # (Windows)
-# source .venv/bin/activate      # (macOS / Linux)
+source .venv/bin/activate   # Linux/Mac
+.\.venv\Scripts\Activate.ps1  # Windows
 
 pip install -r requirements.txt
-```
-
-### Variables de entorno
-Crea `backend/.env` a partir de este ejemplo:
-
-```env
-DJANGO_SECRET_KEY=your-secret-key-here
-DEBUG=1
-ALLOWED_HOSTS=*
-FRONTEND_URL=http://localhost:3002
-
-EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
-DEFAULT_FROM_EMAIL=no-reply@ctsturismo.local
-
-# Celery + Redis (async)
-USE_CELERY=1
-CELERY_BROKER_URL=redis://localhost:6379/0
-CELERY_RESULT_BACKEND=redis://localhost:6379/0
-
-# Admin API (Header X-API-Key)
-ADMIN_API_KEY=your-admin-api-key-here
-```
-
-> **Generar SECRET y API KEY**
-> - `DJANGO_SECRET_KEY`: `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`
-> - `ADMIN_API_KEY`: `python -c "import secrets; print(secrets.token_urlsafe(32))"`
-
-### Migraciones y servidor
-```powershell
-python manage.py makemigrations
+cp .env.example .env
+# edita .env con tu SECRET_KEY y ADMIN_API_KEY
 python manage.py migrate
-python manage.py runserver
+python manage.py runserver 8000
 ```
-- Dev server: `http://127.0.0.1:8000/`
-- Admin Django: `http://127.0.0.1:8000/admin`
+Dev server: http://127.0.0.1:8000/
+
+### Frontend
+```bash
+cd prueba-cts/frontend
+npm install
+cp .env.example .env
+# edita .env con la URL del backend (ej. http://127.0.0.1:8000/api)
+npm run dev
+```
+Frontend: http://localhost:3000/
+
+### Celery + Redis
+Levanta Redis (Docker recomendado):
+```bash
+docker run -d --name redis -p 6379:6379 redis:7
+```
+
+Worker Celery:
+```bash
+cd backend
+celery -A core worker -l info -P solo
+```
 
 ---
 
 ## Variables de entorno
 
-| Variable | Descripción | Default |
-|---|---|---|
-| `DJANGO_SECRET_KEY` | Clave secreta Django | — |
-| `DEBUG` | Modo debug (1/0) | `1` |
-| `ALLOWED_HOSTS` | Hosts permitidos | `*` |
-| `FRONTEND_URL` | Base para armar link de verificación | `http://localhost:3002` |
-| `EMAIL_BACKEND` | Backend de email (dev: consola) | `django.core.mail.backends.console.EmailBackend` |
-| `DEFAULT_FROM_EMAIL` | Remitente por defecto | `no-reply@ctsturismo.local` |
-| `USE_CELERY` | Encolar tareas (1) o sync (0) | `1` |
-| `CELERY_BROKER_URL` | Broker Celery (Redis) | `redis://localhost:6379/0` |
-| `CELERY_RESULT_BACKEND` | Result backend (Redis) | `redis://localhost:6379/0` |
-| `ADMIN_API_KEY` | Clave para Admin API (header) | — |
+### Backend (`backend/.env`)
+```env
+DJANGO_SECRET_KEY=your-secret
+DEBUG=1
+ALLOWED_HOSTS=*
+FRONTEND_URL=http://localhost:3000
+EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+DEFAULT_FROM_EMAIL=no-reply@ctsturismo.local
+USE_CELERY=1
+CELERY_BROKER_URL=redis://localhost:6379/0
+CELERY_RESULT_BACKEND=redis://localhost:6379/0
+ADMIN_API_KEY=your-admin-api-key-here
+```
+
+### Frontend (`frontend/.env`)
+```env
+NUXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api
+NUXT_PUBLIC_ADMIN_API_KEY=
+```
 
 ---
 
@@ -104,212 +110,107 @@ python manage.py runserver
 
 ```
 prueba-cts/
-└─ backend/
-   ├─ manage.py
-   ├─ requirements.txt
-   ├─ .env.example (sugerido para el repo)
-   ├─ .env          (no subir a git)
-   ├─ core/
-   │  ├─ settings.py        # apps, DB, CORS, email, Celery, API key
-   │  ├─ urls.py            # monta /api/
-   │  ├─ wsgi.py / asgi.py
-   │  └─ celery.py + __init__.py (exponen celery_app)
-   └─ participants/
-      ├─ models.py          # Participant
-      ├─ serializers.py     # ParticipantCreateSerializer, ParticipantSerializer
-      ├─ views.py           # register, verify, set-password, admin_* y debug opcional
-      ├─ urls.py            # rutas de la app
-      └─ tasks.py           # send_verification_email_task, send_winner_email_task, ping_task (debug)
+├─ backend/
+│  ├─ core/ (settings, celery, urls)
+│  ├─ participants/ (models, serializers, views, tasks)
+│  └─ manage.py
+├─ frontend/
+│  ├─ app.vue
+│  ├─ pages/
+│  │   ├─ index.vue           # Inscripción
+│  │   ├─ verify.vue          # Verificación + set de contraseña
+│  │   └─ admin/
+│  │        ├─ login.vue      # Login admin
+│  │        ├─ participants.vue  # Lista admin
+│  │        └─ draw.vue       # Sorteo admin
+│  ├─ stores/admin.ts
+│  ├─ composables/useApi.ts
+│  └─ middleware/require-admin.ts
+└─ README.md
 ```
-
-**Convenciones**
-- En URLs: **guion** (`set-password`) por legibilidad.
-- En Python: **guion bajo** (`set_password`) por sintaxis.
 
 ---
 
 ## Endpoints (API) + cURL
 
-### Flujo público
-
-#### 1) Registro de participante
-**POST** `/api/participants/register/`
-
-Body:
-```json
-{
-  "full_name": "Ana Pérez",
-  "email": "ana@example.com",
-  "phone": "+56 9 1234 5678"
-}
-```
-
-cURL:
+### Público
+**1) Registro**  
+POST `/api/participants/register/`
 ```bash
 curl -X POST http://127.0.0.1:8000/api/participants/register/   -H "Content-Type: application/json"   -d '{"full_name":"Ana Pérez","email":"ana@example.com","phone":"+56 9 1234 5678"}'
 ```
 Respuesta (201):
 ```json
-{
-  "message": "¡Gracias por registrarte! Revisa tu correo para verificar tu cuenta.",
-  "async": true,
-  "task_id": "<id-de-la-tarea-si-USE_CELERY=1>"
-}
+{"message":"¡Gracias por registrarte! Revisa tu correo para verificar tu cuenta.","async":true,"task_id":"<id>"}
 ```
 
-> El correo se imprime en **la consola del worker** (EMAIL_BACKEND=consola).
+**2) Verificación**  
+GET `/api/participants/verify/<token>/`
 
-#### 2) Verificación de correo
-**GET** `/api/participants/verify/<token>/`
-
-cURL:
-```bash
-curl -X GET http://127.0.0.1:8000/api/participants/verify/550e8400-e29b-41d4-a716-446655440000/
-```
-Respuesta (200):
-```json
-{"detail":"Correo verificado correctamente","participant_id":1}
-```
-
-#### 3) Set de contraseña
-**POST** `/api/participants/set-password/<participant_id>/`
-
-Body:
-```json
-{"password":"Prueba1234"}
-```
-cURL:
-```bash
-curl -X POST http://127.0.0.1:8000/api/participants/set-password/1/   -H "Content-Type: application/json"   -d '{"password":"Prueba1234"}'
-```
-Respuesta (200):
-```json
-{"detail":"Tu cuenta ha sido activada. Ya estás participando en el sorteo."}
-```
+**3) Set de contraseña**  
+POST `/api/participants/set-password/<participant_id>/`
 
 ---
 
-### Admin API
+### Admin (requiere `X-API-Key`)
+**Listar participantes**  
+GET `/api/admin/participants/?verified=1&page=1&page_size=20&search=ana`
 
-> Requiere header `X-API-Key: <valor de ADMIN_API_KEY>`
-
-#### Listar participantes
-**GET** `/api/admin/participants/?verified=1&page=1&page_size=20&search=ana`
-
-cURL:
-```bash
-curl -X GET "http://127.0.0.1:8000/api/admin/participants/?verified=1&page=1&page_size=20&search=ana"   -H "X-API-Key: your-admin-api-key-here"
-```
-
-Respuesta (200):
+**Sorteo**  
+POST `/api/admin/draw/`
 ```json
 {
-  "page": 1,
-  "page_size": 20,
-  "total": 3,
-  "total_pages": 1,
-  "results": [
-    {"id":5,"full_name":"Ana Pérez","email":"ana5@example.com","phone":"+56 9 1234 5678","is_verified":true,"created_at":"2025-09-22T21:59:46Z"}
-  ]
-}
-```
-
-#### Sorteo de ganador (notifica por email async)
-**POST** `/api/admin/draw/`
-
-cURL:
-```bash
-curl -X POST "http://127.0.0.1:8000/api/admin/draw/"   -H "X-API-Key: your-admin-api-key-here"
-```
-Respuesta (200):
-```json
-{
-  "winner": {
-    "id": 5,
-    "full_name": "Ana Pérez",
-    "email": "ana5@example.com",
-    "phone": "+56 9 1234 5678",
-    "is_verified": true,
-    "created_at": "2025-09-22T21:59:46Z"
-  },
-  "detail": "Ganador seleccionado y notificado por correo (tarea Celery encolada).",
-  "task_id": "<id-de-la-tarea-celery>"
+  "winner": {"id":5,"full_name":"Ana Pérez","email":"ana@example.com", ...},
+  "detail":"Ganador seleccionado y notificado por correo (tarea Celery encolada).",
+  "task_id":"<id>"
 }
 ```
 
 ---
 
-### Debug (opcional)
+## Flujo completo
 
-**GET** `/api/debug/celery/` → `{"USE_CELERY": true}`  
-**POST** `/api/debug/ping-task/` → `{"task_id": "..."}` (worker debe mostrar `Received task...`).
-
----
-
-## Celery + Redis (emails asíncronos)
-
-### Opción rápida con Docker (Redis)
-```powershell
-docker run -d --name redis -p 6379:6379 redis:7
-```
-
-### Worker Celery (Windows usa -P solo)
-```powershell
-# en carpeta backend/ con venv activo
-celery -A core worker -l info -P solo
-# o
-.\.venv\Scripts\python.exe -m celery -A core worker -l info -P solo
-```
-
-**Qué deberías ver** en el worker al registrar/ sortear:
-```
-[INFO/MainProcess] Task participants.tasks.send_verification_email_task[...] received
-[INFO/MainProcess] Task ... succeeded ...
-```
-El **correo** se imprime en la **consola del worker** (no del server).
-
-> Si `USE_CELERY=0`, la vista ejecuta el envío en modo **síncrono** (verás el correo en la consola del **server**).
+1. **Inscripción (/):** formulario → banner “¡Gracias por registrarte!...”
+2. **Verificación (/verify):** token → “Correo verificado correctamente” → set password.
+3. **Set password:** mensaje final → “Tu cuenta ha sido activada. Ya estás participando en el sorteo.”
+4. **Admin login (/admin/login):** ingresar API Key.
+5. **Lista (/admin/participants):** tabla con búsqueda/paginación.
+6. **Sorteo (/admin/draw):** botón → muestra ganador + confirma notificación.
 
 ---
 
 ## Decisiones técnicas
-- **DRF** para serialización/validación y diseño claro de endpoints.
-- **Email de verificación** y **notificación a ganador** como **tasks Celery** (requisito asíncrono).
-- **Selección aleatoria** del ganador sin `order_by('?')` (evita penalización por full-scan).
-- **Admin API con API Key** por simplicidad de pruebas (en producción → auth/permissions).
-- **Convenciones de rutas** y separación `core/` vs `participants/` para escalar.
+- **Nuxt 3** con `pages/` para simplicidad y rutas automáticas.
+- **Pinia** para persistir `ADMIN_API_KEY` en localStorage.
+- **useApi.ts** centraliza llamadas con `X-API-Key`.
+- **Celery + Redis** garantizan envío de emails asíncrono.
+- **Mensajes al usuario** replican literal el enunciado del PDF.
 
 ---
 
 ## Manejo de errores
-- Email duplicado → **400** con detalle del campo.
-- Token inválido en verificación → **404**.
-- Set password sin verificación previa → **403**.
-- Password débil (<8) → **400**.
-- Admin API sin API Key o inválida → **401**.
-- Admin API sin configurar `ADMIN_API_KEY` → **500** con mensaje claro.
+- Registro duplicado → banner rojo “Este email ya está registrado”.
+- Token inválido → mensaje de error en `/verify`.
+- Password < 8 chars → validación visual + error backend.
+- Admin API sin clave → redirección a login.
 
 ---
 
 ## Checklist de calidad
-- [x] Registro con validación de duplicado
-- [x] Verificación de correo por token
-- [x] Set de contraseña (hash seguro)
-- [x] Emails asíncronos (Celery + Redis)
-- [x] Admin API: listar + sorteo con email al ganador
-- [x] cURL listo para Postman
-- [ ] Frontend (5 vistas mínimas)
-- [ ] Tests (serializers, views)
-- [ ] Docker Compose (web+redis+worker)
-- [ ] Despliegue (ASGI/WSGI production-ready)
+- [x] 5 vistas frontend (Inscripción, Verify+Password, Login, Lista, Sorteo)
+- [x] Mensajes literales del PDF
+- [x] Backend con DRF + Celery + Redis
+- [x] API Key para admin
+- [x] Manejo de estados: loading / error / success
+- [ ] Tests básicos (opcional, plus)
+- [ ] Docker Compose (opcional, plus)
 
 ---
 
 ## Próximos pasos
-- **Frontend** (form de inscripción, verificación+password, panel admin con sorteo).
-- **Tests** de unidad e integración.
-- **Docker Compose** para levantar stack completo fácilmente.
-- **Mejoras**: máscara de email en Admin API, rate limiting, logging estructurado.
+- Añadir **tests** de serializers y componentes Vue.
+- Crear `docker-compose.yml` para levantar stack completo.
+- Mejorar UI admin (navbar con logout, máscara de email).
 
 ---
 

@@ -5,9 +5,13 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
+from  core.settings import USE_CELERY
 from .serializers import ParticipantCreateSerializer
 from .models import Participant
 from .tasks import send_verification_email_task
+from .tasks import send_winner_email_task
+
+
 from django.shortcuts import get_object_or_404
 
 import logging
@@ -103,6 +107,7 @@ def debug_celery(request):
 
 # Helper para autenticación simple con API Key en header, su función es devolver None si OK, o Response(...) si falla.
 
+
 def _require_api_key(request):
     """
     Valida el header X-API-Key contra settings.ADMIN_API_KEY.
@@ -175,6 +180,7 @@ def admin_participants(request):
     )
 
 
+# escoge un ganador aleatorio entre los verificados y envía email (async con Celery)
 @api_view(["POST"])
 def admin_draw(request):
     """
@@ -195,14 +201,21 @@ def admin_draw(request):
     idx = random.randrange(count)
     winner = qs[idx]
 
-    # Notificar ganador (async)
-    async_result = send_verification_email_task.delay(winner.id)
+    if settings.USE_CELERY:
+        async_result = send_winner_email_task.delay(winner.id)
+    else:
+        send_winner_email_task(winner.id)
+        async_result = type(
+            "R", (), {"id": None}
+        )()  # objeto simulado con id=None, guarda en async_result.id el valor None o id real
+
+    data = {
+        "winner": ParticipantCreateSerializer(winner).data,
+        "detail": "Ganador seleccionado y notificado por correo (tarea Celery encolada).",
+        "task_id": async_result.id,
+    }
 
     return Response(
-        {
-            "winner": ParticipantCreateSerializer(winner).data,
-            "detail": "Ganador seleccionado y notificado por correo (tarea Celery encolada).",
-            "task_id": async_result.id,
-        },
+        data,
         status=200,
     )
