@@ -35,6 +35,11 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True  # dev
 
+from corsheaders.defaults import default_headers
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "x-api-key",  # Permite el header personalizado "
+]
+
 ROOT_URLCONF = "core.urls"
 
 # Templates de Django
