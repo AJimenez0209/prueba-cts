@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+/* opcional: base mínima */
+:root { color-scheme: light; }
+html, body { background: #f9fafb; color: #111827; }
